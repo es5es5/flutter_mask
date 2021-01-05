@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mask/model/store.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_mask/repository/store_repository.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,67 +26,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final stores = List<Store>();
-  var isLoading = true;
+  final storeRepository = StoreRepository();
+
+  var stores = List<Store>();
+  var isLoading = false;
   var isFilter = false;
 
   @override
   void initState() {
     super.initState();
-    getStoreList();
-  }
-
-  getStoreListFilter() async {
-    setState(() {
-      isLoading = true;
-      isFilter = true;
-    });
-    var url =
-        'https://gist.githubusercontent.com/junsuk5/bb7485d5f70974deee920b8f0cd1e2f0/raw/063f64d9b343120c2cb01a6555cf9b38761b1d94/sample.json';
-    var response = await http.get(url);
-
-    final jsonResult = jsonDecode(response.body);
-    final jsonStores = jsonResult['stores'];
-
-    setState(() {
-      stores.clear();
-      jsonStores.forEach((item) {
-        if (isFilter) {
-          if (Store.fromJson(item).remainStat == 'plenty' ||
-              Store.fromJson(item).remainStat == 'some')
-            stores.add(Store.fromJson(item));
-        } else {
-          stores.add(Store.fromJson(item));
-        }
+    storeRepository.getStoreList().then((value) {
+      setState(() {
+        stores = value;
       });
-      isLoading = false;
-    });
-  }
-
-  Future getStoreList() async {
-    setState(() {
-      isLoading = true;
-      isFilter = false;
-    });
-    var url =
-        'https://gist.githubusercontent.com/junsuk5/bb7485d5f70974deee920b8f0cd1e2f0/raw/063f64d9b343120c2cb01a6555cf9b38761b1d94/sample.json';
-    var response = await http.get(url);
-
-    final jsonResult = jsonDecode(response.body);
-    final jsonStores = jsonResult['stores'];
-
-    setState(() {
-      stores.clear();
-      jsonStores.forEach((item) {
-        if (isFilter) {
-          if (Store.fromJson(item).remainStat == 'plenty' ||
-              Store.fromJson(item).remainStat == 'some')
-            stores.add(Store.fromJson(item));
-        } else {
-          stores.add(Store.fromJson(item));
-        }
-      });
-      isLoading = false;
     });
   }
 
@@ -100,8 +50,20 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: <Widget>[
             IconButton(
                 icon: Icon(Icons.filter_list_outlined),
-                onPressed: getStoreListFilter),
-            IconButton(icon: Icon(Icons.refresh), onPressed: getStoreList),
+                onPressed: () {
+                  storeRepository.getStoreListFilter().then((value) {
+                    setState(() {
+                      stores = value;
+                    });
+                  });
+                }),
+            IconButton(icon: Icon(Icons.refresh), onPressed: () {
+              storeRepository.getStoreList().then((value) {
+                setState(() {
+                  stores = value;
+                });
+              });
+            }),
           ],
         ),
         body: isLoading
