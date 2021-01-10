@@ -3,7 +3,7 @@ import 'package:flutter_mask/model/store.dart';
 import 'package:http/http.dart' as http;
 
 class StoreRepository {
-  Future<List<Store>> getStoreListFilter() async {
+  Future<List<Store>> getStoreListFilter(double lat, double lng) async {
     final stores = List<Store>();
 
     var url =
