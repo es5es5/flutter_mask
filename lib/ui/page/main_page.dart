@@ -10,28 +10,43 @@ class MainPage extends StatelessWidget {
     final storeModel = Provider.of<StoreModel>(context);
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('${storeModel.stores.length}곳'),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.filter_list_outlined),
-                onPressed: () {
-                  storeModel.getStoreListFilter();
-                }),
-            IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: () {
-                  storeModel.getStoreList();
-                }),
+      appBar: AppBar(
+        title: Text('${storeModel.stores.length}곳'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.filter_list_outlined),
+              onPressed: () {
+                storeModel.getStoreListFilter();
+              }),
+          IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                storeModel.getStoreList();
+              }),
+        ],
+      ),
+      body: _bulidBody(storeModel),
+    );
+  }
+
+  Widget _bulidBody(StoreModel storeModel) {
+    if (storeModel.isLoading) return loadingWidget();
+    if (storeModel.stores.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('음씁니다'),
+            Text('인터넷도 확인해봐여'),
           ],
         ),
-        body: storeModel.isLoading
-            ? loadingWidget()
-            : ListView(
-          children: storeModel.stores.map((item) {
-            return RemainStatListTile(item);
-          }).toList(),
-        ));
+      );
+    }
+
+    return ListView(
+        children: storeModel.stores.map((item) {
+      return RemainStatListTile(item);
+    }).toList());
   }
 
   Widget loadingWidget() {
