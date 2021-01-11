@@ -26,7 +26,7 @@ class StoreRepository {
         stores.add(store);
       }
     });
-    return stores;
+    return stores..sort((a, b) => a.km.compareTo(b.km));
   }
 
   Future<List<Store>> getStoreList() async {
