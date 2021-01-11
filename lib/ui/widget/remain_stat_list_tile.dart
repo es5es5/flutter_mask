@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mask/model/store.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RemainStatListTile extends StatelessWidget {
   final Store store;
@@ -10,13 +11,12 @@ class RemainStatListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(store.name),
-      subtitle: Text(store.addr),
-      trailing: _buildRemainStatWidget(store),
-      onTap: () {
-        print('Hi');
-      }
-    );
+        title: Text(store.name),
+        subtitle: Text(store.addr),
+        trailing: _buildRemainStatWidget(store),
+        onTap: () {
+          _launchURL(store.lat, store.lng);
+        });
   }
 
   Widget _buildRemainStatWidget(Store store) {
@@ -64,5 +64,14 @@ class RemainStatListTile extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  _launchURL(double lat, double lng) async {
+    final url = 'https://google.com/maps/search/?api=1&query=$lat,$lng';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'nono $url';
+    }
   }
 }
